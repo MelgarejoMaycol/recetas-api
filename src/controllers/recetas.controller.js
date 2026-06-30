@@ -3,7 +3,8 @@ const recetas = require("../models/recetas.model");
 const crearReceta = async (req, res) => {
     try {
         const { nombre, descripcion, pais, imagenUrl, tiempoPreparacion, porciones, dificultad, usuarioId, categoriaId } = req.body;
-        const receta = await recetas.crearReceta(nombre, descripcion, pais, imagenUrl, tiempoPreparacion, porciones, dificultad, usuarioId, categoriaId);
+        const imagenReceta = req.file?.path || imagenUrl || null;
+        const receta = await recetas.crearReceta(nombre, descripcion, pais, imagenReceta, tiempoPreparacion, porciones, dificultad, usuarioId, categoriaId);
         res.status(201).json({
             mensaje: "Receta creada correctamente",
             receta,
