@@ -30,7 +30,23 @@ const obtenerUsuarios = async (req, res) => {
   }
 };
 
+const loginUsuario = async (req, res) => {
+  try {
+    const resultado = await usuarioService.loginUsuario(req.body);
+
+    res.json({
+      mensaje: "Login correcto",
+      ...resultado,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      mensaje: error.message || "Error al iniciar sesión",
+    });
+  }
+};
+
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  loginUsuario,
 };

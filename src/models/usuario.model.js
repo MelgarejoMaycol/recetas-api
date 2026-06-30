@@ -26,7 +26,34 @@ const obtenerUsuarios = async () => {
   return resultado.rows;
 };
 
+const buscarUsuarioPorEmail = async (email) => {
+  const consulta = `
+    SELECT id, nombre, email, password
+    FROM usuarios
+    WHERE email = $1;
+  `;
+
+  const resultado = await pool.query(consulta, [email]);
+
+  return resultado.rows[0];
+};
+
+const actualizarPassword = async (id, password) => {
+  const consulta = `
+    UPDATE usuarios
+    SET password = $1
+    WHERE id = $2
+    RETURNING id, nombre, email, fecha_creacion;
+  `;
+
+  const resultado = await pool.query(consulta, [password, id]);
+
+  return resultado.rows[0];
+};
+
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  buscarUsuarioPorEmail,
+  actualizarPassword,
 };
