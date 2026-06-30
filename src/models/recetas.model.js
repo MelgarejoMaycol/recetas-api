@@ -42,19 +42,109 @@ const crearReceta = async (
     return resultado.rows[0];
 }
 
-const verRecetas = async () => {
+const camposReceta = `
+    SELECT r.id, r.nombre, r.descripcion, r.pais, r.imagen_url,
+           r.tiempo_preparacion, r.porciones, r.dificultad,
+           r.usuario_id, r.categoria_id, r.fecha_creacion,
+           u.nombre AS nombre_usuario, c.nombre AS nombre_categoria
+    FROM recetas r
+    JOIN usuarios u ON r.usuario_id = u.id
+    JOIN categorias_recetas c ON r.categoria_id = c.id
+`;
+
+const verRecetas = async ({ q, categoria_id, pais, dificultad } = {}) => {
+    const condiciones = [];
+    const valores = [];
+
+    if (q) {
+        valores.push(`%${q}%`);
+        condiciones.push(`(r.nombre ILIKE $${valores.length} OR r.descripcion ILIKE $${valores.length})`);
+    }
+
+    if (categoria_id) {
+        valores.push(categoria_id);
+        condiciones.push(`r.categoria_id = $${valores.length}`);
+    }
+
+    if (pais) {
+        valores.push(`%${pais}%`);
+        condiciones.push(`r.pais ILIKE $${valores.length}`);
+    }
+
+    if (dificultad) {
+        valores.push(dificultad);
+        condiciones.push(`r.dificultad = $${valores.length}`);
+    }
+
+    const where = condiciones.length ? `WHERE ${condiciones.join(" AND ")}` : "";
     const consulta = `
-        SELECT r.id, r.nombre, r.descripcion, r.pais, r.imagen_url,
-               r.tiempo_preparacion, r.porciones, r.dificultad,
-               r.usuario_id, r.categoria_id, r.fecha_creacion,
-               u.nombre AS nombre_usuario, c.nombre AS nombre_categoria
-        FROM recetas r
-        JOIN usuarios u ON r.usuario_id = u.id
-        JOIN categorias_recetas c ON r.categoria_id = c.id
+        ${camposReceta}
+        ${where}
         ORDER BY r.id DESC;
     `;
-    const resultado = await pool.query(consulta);
+    const resultado = await pool.query(consulta, valores);
     return resultado.rows;
+};
+
+const obtenerRecetaPorId = async (id) => {
+    const consulta = `
+        ${camposReceta}
+        WHERE r.id = $1;
+    `;
+    const resultado = await pool.query(consulta, [id]);
+    return resultado.rows[0];
+};
+
+const actualizarReceta = async (
+    id,
+    usuarioId,
+    nombre,
+    descripcion,
+    pais,
+    imagenUrl,
+    tiempoPreparacion,
+    porciones,
+    dificultad,
+    categoriaId
+) => {
+    const consulta = `
+        UPDATE recetas
+        SET nombre = $1,
+            descripcion = $2,
+            pais = $3,
+            imagen_url = COALESCE($4, imagen_url),
+            tiempo_preparacion = $5,
+            porciones = $6,
+            dificultad = $7,
+            categoria_id = $8
+        WHERE id = $9 AND usuario_id = $10
+        RETURNING id, nombre, descripcion, pais, imagen_url, tiempo_preparacion,
+                  porciones, dificultad, usuario_id, categoria_id, fecha_creacion;
+    `;
+    const valores = [
+        nombre,
+        descripcion,
+        pais,
+        imagenUrl,
+        tiempoPreparacion,
+        porciones,
+        dificultad,
+        categoriaId,
+        id,
+        usuarioId
+    ];
+    const resultado = await pool.query(consulta, valores);
+    return resultado.rows[0];
+};
+
+const eliminarReceta = async (id, usuarioId) => {
+    const consulta = `
+        DELETE FROM recetas
+        WHERE id = $1 AND usuario_id = $2
+        RETURNING id, nombre, usuario_id;
+    `;
+    const resultado = await pool.query(consulta, [id, usuarioId]);
+    return resultado.rows[0];
 };
 
 const verMisRecetas = async (usuarioId) => {
@@ -77,5 +167,8 @@ const verMisRecetas = async (usuarioId) => {
 module.exports = {
     crearReceta,
     verRecetas,
+    obtenerRecetaPorId,
+    actualizarReceta,
+    eliminarReceta,
     verMisRecetas,
 };

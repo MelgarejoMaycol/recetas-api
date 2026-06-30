@@ -58,9 +58,33 @@ const verMejoresRecetas = async () => {
     return resultado.rows;
 }
 
+const actualizarComentario = async (id, usuario_id, comentario, calificacion) => {
+    const consulta = `
+        UPDATE comentarios
+        SET comentario = $1,
+            calificacion = $2
+        WHERE id = $3 AND usuario_id = $4
+        RETURNING id, receta_id, usuario_id, comentario, calificacion, fecha_creacion;
+    `;
+    const resultado = await pool.query(consulta, [comentario, calificacion, id, usuario_id]);
+    return resultado.rows[0];
+}
+
+const eliminarComentario = async (id, usuario_id) => {
+    const consulta = `
+        DELETE FROM comentarios
+        WHERE id = $1 AND usuario_id = $2
+        RETURNING id, receta_id, usuario_id, comentario, calificacion, fecha_creacion;
+    `;
+    const resultado = await pool.query(consulta, [id, usuario_id]);
+    return resultado.rows[0];
+}
+
 module.exports = {
     comentarios,
     verComentarios,
     verMisComentarios,
-    verMejoresRecetas
+    verMejoresRecetas,
+    actualizarComentario,
+    eliminarComentario
 };

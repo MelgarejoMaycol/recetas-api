@@ -33,7 +33,54 @@ const verIngredientesPorReceta = async (receta_id) => {
     return resultado.rows;
 }
 
+const actualizarRecetaIngrediente = async (id, cantidad, unidad) => {
+    const consulta = `
+        UPDATE receta_ingredientes
+        SET cantidad = $1,
+            unidad = $2
+        WHERE id = $3
+        RETURNING id, receta_id, ingrediente_id, cantidad, unidad;
+    `;
+    const resultado = await pool.query(consulta, [cantidad, unidad, id]);
+    return resultado.rows[0];
+}
+
+const eliminarRecetaIngrediente = async (id) => {
+    const consulta = `
+        DELETE FROM receta_ingredientes
+        WHERE id = $1
+        RETURNING id, receta_id, ingrediente_id, cantidad, unidad;
+    `;
+    const resultado = await pool.query(consulta, [id]);
+    return resultado.rows[0];
+}
+
+const recetaIngredientePerteneceUsuario = async (id, usuario_id) => {
+    const consulta = `
+        SELECT ri.id
+        FROM receta_ingredientes ri
+        JOIN recetas r ON ri.receta_id = r.id
+        WHERE ri.id = $1 AND r.usuario_id = $2;
+    `;
+    const resultado = await pool.query(consulta, [id, usuario_id]);
+    return Boolean(resultado.rows[0]);
+}
+
+const recetaPerteneceUsuario = async (receta_id, usuario_id) => {
+    const consulta = `
+        SELECT id
+        FROM recetas
+        WHERE id = $1 AND usuario_id = $2;
+    `;
+    const resultado = await pool.query(consulta, [receta_id, usuario_id]);
+    return Boolean(resultado.rows[0]);
+}
+
 module.exports = {
     crearRecetaIngrediente,
-    verIngredientesPorReceta
+    verIngredientesPorReceta,
+    actualizarRecetaIngrediente,
+    eliminarRecetaIngrediente,
+    recetaIngredientePerteneceUsuario,
+    recetaPerteneceUsuario
 };

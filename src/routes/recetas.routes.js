@@ -17,7 +17,6 @@ const subirImagen = (req, res, next) => {
   });
 };
 
-router.post("/", autenticar, subirImagen, recetasController.crearReceta);
 router.get("/", recetasController.verRecetas);
 router.get(
   "/mis-recetas/:usuario_id",
@@ -25,5 +24,9 @@ router.get(
   autorizarMismoUsuario("usuario_id"),
   recetasController.verMisRecetas
 );
+router.get("/:id", recetasController.obtenerRecetaPorId);
+router.post("/", autenticar, subirImagen, recetasController.crearReceta);
+router.put("/:id", autenticar, subirImagen, recetasController.actualizarReceta);
+router.delete("/:id", autenticar, recetasController.eliminarReceta);
 
 module.exports = router;

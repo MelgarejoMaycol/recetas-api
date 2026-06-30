@@ -6,6 +6,8 @@ const { autenticar, autorizarMismoUsuario } = require("../middlewares/auth.middl
 router.post("/", autenticar, comentariosController.crearComentario);
 router.get("/mejores-recetas", comentariosController.verMejoresRecetas);
 router.get("/receta/:receta_id", comentariosController.verComentarios);
+router.put("/:id", autenticar, comentariosController.actualizarComentario);
+router.delete("/:id", autenticar, comentariosController.eliminarComentario);
 router.get(
   "/usuario/:usuario_id",
   autenticar,

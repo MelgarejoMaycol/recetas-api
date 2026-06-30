@@ -59,9 +59,47 @@ const verMejoresRecetas = async (req, res) => {
   }
 };
 
+const actualizarComentario = async (req, res) => {
+  try {
+    const comentario = await comentariosService.actualizarComentario(
+      req.params.id,
+      req.usuario.id,
+      req.body
+    );
+    res.json({
+      mensaje: "Comentario actualizado correctamente",
+      comentario,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al actualizar comentario",
+      detalle: error.message,
+    });
+  }
+};
+
+const eliminarComentario = async (req, res) => {
+  try {
+    const comentario = await comentariosService.eliminarComentario(req.params.id, req.usuario.id);
+    res.json({
+      mensaje: "Comentario eliminado correctamente",
+      comentario,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al eliminar comentario",
+      detalle: error.message,
+    });
+  }
+};
+
 module.exports = {
   crearComentario,
   verComentarios,
   verMisComentarios,
   verMejoresRecetas,
+  actualizarComentario,
+  eliminarComentario,
 };
