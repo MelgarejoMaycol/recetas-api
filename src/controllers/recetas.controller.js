@@ -1,40 +1,15 @@
-const recetas = require("../models/recetas.model");
+const recetasServices = require("../services/recetas.service");
 
 const crearReceta = async (req, res) => {
     try {
-        const {
-            nombre,
-            descripcion,
-            pais,
-            imagenUrl,
-            tiempoPreparacion,
-            tiempo_preparacion,
-            porciones,
-            dificultad,
-            usuarioId,
-            usuario_id,
-            categoriaId,
-            categoria_id
-        } = req.body;
-        const imagenReceta = req.file?.path || imagenUrl || null;
-        const receta = await recetas.crearReceta(
-            nombre,
-            descripcion,
-            pais,
-            imagenReceta,
-            tiempoPreparacion || tiempo_preparacion || null,
-            porciones || null,
-            dificultad || null,
-            usuarioId || usuario_id,
-            categoriaId || categoria_id
-        );
+        const receta = await recetasServices.crearReceta(req.body, req.file);
         res.status(201).json({
             mensaje: "Receta creada correctamente",
             receta,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({
+        res.status(error.statusCode || 500).json({
             mensaje: "Error al crear receta",
             detalle: error.message,
         });
@@ -43,7 +18,7 @@ const crearReceta = async (req, res) => {
 
 const verRecetas = async (req, res) => {
     try {
-        const recetasList = await recetas.verRecetas();
+        const recetasList = await recetasServices.verRecetas();
         res.json(recetasList);
     } catch (error) {
         console.error(error);
@@ -55,13 +30,14 @@ const verRecetas = async (req, res) => {
 
 const verMisRecetas = async (req, res) => {
     try {
-        const { usuarioId } = req.params;
-        const misRecetas = await recetas.verMisRecetas(usuarioId);
+        const { usuario_id } = req.params;
+        const misRecetas = await recetasServices.verMisRecetas(usuario_id);
         res.json(misRecetas);
     } catch (error) {
         console.error(error);
-        res.status(500).json({
+        res.status(error.statusCode || 500).json({
             mensaje: "Error al obtener mis recetas",
+            detalle: error.message,
         });
     }
 };

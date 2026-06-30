@@ -18,6 +18,6 @@ const subirImagen = (req, res, next) => {
 
 router.post("/", subirImagen, recetasController.crearReceta);
 router.get("/", recetasController.verRecetas);
-router.get("/mis-recetas/:usuarioId", recetasController.verMisRecetas);
+router.get("/mis-recetas/:usuario_id", recetasController.verMisRecetas);
 
 module.exports = router;
