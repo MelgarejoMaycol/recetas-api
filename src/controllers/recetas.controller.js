@@ -36,6 +36,7 @@ const crearReceta = async (req, res) => {
         console.error(error);
         res.status(500).json({
             mensaje: "Error al crear receta",
+            detalle: error.message,
         });
     }
 };
