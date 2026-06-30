@@ -2,7 +2,10 @@ const comentariosService = require("../services/comentarios.service");
 
 const crearComentario = async (req, res) => {
   try {
-    const comentario = await comentariosService.crearComentario(req.body);
+    const comentario = await comentariosService.crearComentario({
+      ...req.body,
+      usuario_id: req.usuario.id,
+    });
     res.status(201).json({
       mensaje: "Comentario creado correctamente",
       comentario,
@@ -32,8 +35,7 @@ const verComentarios = async (req, res) => {
 
 const verMisComentarios = async (req, res) => {
   try {
-    const { usuario_id } = req.params;
-    const comentarios = await comentariosService.verMisComentarios(usuario_id);
+    const comentarios = await comentariosService.verMisComentarios(req.usuario.id);
     res.json(comentarios);
   } catch (error) {
     console.error(error);

@@ -2,7 +2,13 @@ const recetasServices = require("../services/recetas.service");
 
 const crearReceta = async (req, res) => {
     try {
-        const receta = await recetasServices.crearReceta(req.body, req.file);
+        const receta = await recetasServices.crearReceta(
+            {
+                ...req.body,
+                usuario_id: req.usuario.id,
+            },
+            req.file
+        );
         res.status(201).json({
             mensaje: "Receta creada correctamente",
             receta,
@@ -30,8 +36,7 @@ const verRecetas = async (req, res) => {
 
 const verMisRecetas = async (req, res) => {
     try {
-        const { usuario_id } = req.params;
-        const misRecetas = await recetasServices.verMisRecetas(usuario_id);
+        const misRecetas = await recetasServices.verMisRecetas(req.usuario.id);
         res.json(misRecetas);
     } catch (error) {
         console.error(error);

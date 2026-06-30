@@ -2,7 +2,10 @@ const favoritosService = require("../services/favoritos.service");
 
 const crearFavorito = async (req, res) => {
   try {
-    const favorito = await favoritosService.crearFavorito(req.body);
+    const favorito = await favoritosService.crearFavorito({
+      ...req.body,
+      usuario_id: req.usuario.id,
+    });
     res.status(201).json({
       mensaje: "Favorito creado correctamente",
       favorito,
@@ -18,8 +21,7 @@ const crearFavorito = async (req, res) => {
 
 const verFavoritosPorUsuario = async (req, res) => {
   try {
-    const { usuario_id } = req.params;
-    const favoritos = await favoritosService.verFavoritosPorUsuario(usuario_id);
+    const favoritos = await favoritosService.verFavoritosPorUsuario(req.usuario.id);
     res.json(favoritos);
   } catch (error) {
     console.error(error);
@@ -32,8 +34,8 @@ const verFavoritosPorUsuario = async (req, res) => {
 
 const eliminarFavorito = async (req, res) => {
   try {
-    const { usuario_id, receta_id } = req.params;
-    const favorito = await favoritosService.eliminarFavorito(usuario_id, receta_id);
+    const { receta_id } = req.params;
+    const favorito = await favoritosService.eliminarFavorito(req.usuario.id, receta_id);
     res.json({
       mensaje: favorito ? "Favorito eliminado correctamente" : "Favorito no encontrado",
       favorito: favorito || null,
@@ -63,8 +65,7 @@ const countFavoritosPorReceta = async (req, res) => {
 
 const countFavoritosPorUsuario = async (req, res) => {
   try {
-    const { usuario_id } = req.params;
-    const total = await favoritosService.countFavoritosPorUsuario(usuario_id);
+    const total = await favoritosService.countFavoritosPorUsuario(req.usuario.id);
     res.json({ total_favoritos: total });
   } catch (error) {
     console.error(error);
