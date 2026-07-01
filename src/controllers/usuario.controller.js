@@ -30,6 +30,37 @@ const obtenerUsuarios = async (req, res) => {
   }
 };
 
+const obtenerMiPerfil = async (req, res) => {
+  try {
+    const usuario = await usuarioService.obtenerMiPerfil(req.usuario.id);
+
+    res.json(usuario);
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al obtener informacion personal",
+      detalle: error.message,
+    });
+  }
+};
+
+const actualizarMiPerfil = async (req, res) => {
+  try {
+    const usuario = await usuarioService.actualizarMiPerfil(req.usuario.id, req.body);
+
+    res.json({
+      mensaje: "Informacion personal actualizada correctamente",
+      usuario,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al actualizar informacion personal",
+      detalle: error.message,
+    });
+  }
+};
+
 const loginUsuario = async (req, res) => {
   try {
     const resultado = await usuarioService.loginUsuario(req.body);
@@ -48,5 +79,7 @@ const loginUsuario = async (req, res) => {
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  obtenerMiPerfil,
+  actualizarMiPerfil,
   loginUsuario,
 };

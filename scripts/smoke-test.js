@@ -63,6 +63,18 @@ const main = async () => {
     });
     assertStatus(protectedRoute, 401, "Ruta protegida sin token");
 
+    const usuarios = await request(baseUrl, "/api/usuarios?page=1&limit=1");
+    assertStatus(usuarios, 200, "GET /api/usuarios");
+
+    if (!usuarios.body || !usuarios.body.pagination || !Array.isArray(usuarios.body.data)) {
+      throw new Error("GET /api/usuarios no devolvio respuesta paginada");
+    }
+
+    const usuarioPublico = usuarios.body.data[0];
+    if (usuarioPublico && ("email" in usuarioPublico || "password" in usuarioPublico)) {
+      throw new Error("GET /api/usuarios expuso datos privados");
+    }
+
     const securityResponse = await fetch(`${baseUrl}/api/recetas?page=1&limit=1`);
     if (!securityResponse.headers.get("x-content-type-options")) {
       throw new Error("Helmet no agrego x-content-type-options");

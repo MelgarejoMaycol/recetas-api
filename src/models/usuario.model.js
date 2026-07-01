@@ -18,7 +18,7 @@ const crearUsuario = async (nombre, email, password) => {
 const obtenerUsuarios = async ({ page, limit } = {}) => {
   const paginacion = normalizarPaginacion({ page, limit });
   const consulta = `
-    SELECT id, nombre, email, fecha_creacion
+    SELECT nombre
     FROM usuarios
     ORDER BY id DESC
     LIMIT $1
@@ -32,6 +32,18 @@ const obtenerUsuarios = async ({ page, limit } = {}) => {
   ]);
 
   return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
+};
+
+const obtenerUsuarioPorId = async (id) => {
+  const consulta = `
+    SELECT id, nombre, email, fecha_creacion
+    FROM usuarios
+    WHERE id = $1;
+  `;
+
+  const resultado = await pool.query(consulta, [id]);
+
+  return resultado.rows[0];
 };
 
 const actualizarDatos = async (id, nombre, email) => {
@@ -75,6 +87,7 @@ const actualizarPassword = async (id, password) => {
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  obtenerUsuarioPorId,
   buscarUsuarioPorEmail,
   actualizarPassword,
   actualizarDatos,

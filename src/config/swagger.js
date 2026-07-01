@@ -40,6 +40,13 @@ const swaggerSpec = swaggerJsdoc({
             password: { type: "string", example: "123456" },
           },
         },
+        UsuarioPerfil: {
+          type: "object",
+          properties: {
+            nombre: { type: "string", example: "Maycol" },
+            email: { type: "string", example: "maycol@gmail.com" },
+          },
+        },
         Receta: {
           type: "object",
           required: ["nombre", "categoria_id"],
@@ -124,7 +131,8 @@ const swaggerSpec = swaggerJsdoc({
       "/api/usuarios": {
         get: {
           tags: ["Usuarios"],
-          summary: "Listar usuarios",
+          summary: "Listar usuarios publicos",
+          description: "Devuelve solo el nombre de cada usuario. No expone correo ni password.",
           parameters: [{ $ref: "#/components/parameters/Page" }, { $ref: "#/components/parameters/Limit" }],
           responses: { 200: { description: "Usuarios listados" } },
         },
@@ -133,6 +141,21 @@ const swaggerSpec = swaggerJsdoc({
           summary: "Registrar usuario",
           requestBody: { content: { "application/json": { schema: { $ref: "#/components/schemas/UsuarioRegistro" } } } },
           responses: { 201: { description: "Usuario creado" }, 400: { description: "Datos invalidos" } },
+        },
+      },
+      "/api/usuarios/me": {
+        get: {
+          tags: ["Usuarios"],
+          summary: "Ver informacion personal del usuario autenticado",
+          security: [{ bearerAuth: [] }],
+          responses: { 200: { description: "Informacion personal" }, 401: { description: "Token requerido" } },
+        },
+        put: {
+          tags: ["Usuarios"],
+          summary: "Actualizar informacion personal del usuario autenticado",
+          security: [{ bearerAuth: [] }],
+          requestBody: { content: { "application/json": { schema: { $ref: "#/components/schemas/UsuarioPerfil" } } } },
+          responses: { 200: { description: "Informacion actualizada" }, 409: { description: "Email ya registrado" } },
         },
       },
       "/api/usuarios/login": {

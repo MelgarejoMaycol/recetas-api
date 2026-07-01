@@ -216,8 +216,28 @@ https://recetas-api-j4p8.onrender.com
 | Metodo | Endpoint | Privado | Descripcion |
 |---|---|---:|---|
 | POST | `/api/usuarios` | No | Registrar usuario |
-| GET | `/api/usuarios?page=1&limit=10` | No | Listar usuarios |
+| GET | `/api/usuarios?page=1&limit=10` | No | Listar usuarios publicos, solo muestra `nombre` |
+| GET | `/api/usuarios/me` | Si | Ver informacion personal del usuario logueado |
+| PUT | `/api/usuarios/me` | Si | Actualizar informacion personal del usuario logueado |
 | POST | `/api/usuarios/login` | No | Iniciar sesion |
+
+El listado publico de usuarios no muestra correo ni password. La respuesta solo incluye nombres:
+
+```json
+{
+  "data": [
+    {
+      "nombre": "Maycol"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
 
 Registro:
 
@@ -237,6 +257,42 @@ Login:
   "password": "123456"
 }
 ```
+
+Ver informacion personal:
+
+```http
+GET /api/usuarios/me
+Authorization: Bearer TOKEN_JWT
+```
+
+Respuesta:
+
+```json
+{
+  "id": 1,
+  "nombre": "Maycol",
+  "email": "maycol@email.com",
+  "fecha_creacion": "2026-07-01T00:00:00.000Z"
+}
+```
+
+Actualizar informacion personal:
+
+```http
+PUT /api/usuarios/me
+Authorization: Bearer TOKEN_JWT
+```
+
+Body:
+
+```json
+{
+  "nombre": "Maycol Melgarejo",
+  "email": "maycol.nuevo@email.com"
+}
+```
+
+La contraseña nunca se devuelve en las respuestas de la API.
 
 ### Recetas
 

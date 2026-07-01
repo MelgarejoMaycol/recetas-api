@@ -26,6 +26,36 @@ const obtenerUsuarios = async (paginacion) => {
   return usuarioModel.obtenerUsuarios(paginacion);
 };
 
+const obtenerMiPerfil = async (usuario_id) => {
+  const usuario = await usuarioModel.obtenerUsuarioPorId(usuario_id);
+
+  if (!usuario) {
+    const error = new Error("Usuario no encontrado");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return usuario;
+};
+
+const actualizarMiPerfil = async (usuario_id, { nombre, email }) => {
+  const usuarioActual = await obtenerMiPerfil(usuario_id);
+  const nuevoNombre = nombre || usuarioActual.nombre;
+  const nuevoEmail = email || usuarioActual.email;
+
+  if (email && email !== usuarioActual.email) {
+    const usuarioExistente = await usuarioModel.buscarUsuarioPorEmail(email);
+
+    if (usuarioExistente && String(usuarioExistente.id) !== String(usuario_id)) {
+      const error = new Error("El email ya esta registrado");
+      error.statusCode = 409;
+      throw error;
+    }
+  }
+
+  return usuarioModel.actualizarDatos(usuario_id, nuevoNombre, nuevoEmail);
+};
+
 const loginUsuario = async ({ email, password }) => {
   if (!email || !password) {
     const error = new Error("Email y password son obligatorios");
@@ -89,5 +119,7 @@ const loginUsuario = async ({ email, password }) => {
 module.exports = {
   crearUsuario,
   obtenerUsuarios,
+  obtenerMiPerfil,
+  actualizarMiPerfil,
   loginUsuario,
 };
