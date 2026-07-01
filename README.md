@@ -553,6 +553,8 @@ node index.js
 
 Configurar en Render las mismas variables de entorno del archivo `.env.example`.
 
+Nota: si la API esta desplegada en un plan gratuito o con ahorro de recursos, puede apagarse o quedar en reposo despues de un tiempo sin uso. Al abrir el enlace principal o hacer una nueva peticion, el servicio puede tardar unos segundos en responder mientras vuelve a iniciar.
+
 ## Autor
 
 Creado por **Maycol Melgarejo**  
