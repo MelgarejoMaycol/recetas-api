@@ -58,9 +58,56 @@ const obtenerPreparacionPorNumeroPaso = async (receta_id, numero_paso) => {
     return resultado.rows[0];
 }
 
+const actualizarPreparacion = async (id, numero_paso, descripcion) => {
+    const consulta = `
+        UPDATE preparaciones
+        SET numero_paso = $1,
+            descripcion = $2
+        WHERE id = $3
+        RETURNING id, receta_id, numero_paso, descripcion;
+    `;
+    const resultado = await pool.query(consulta, [numero_paso, descripcion, id]);
+    return resultado.rows[0];
+}
+
+const eliminarPreparacion = async (id) => {
+    const consulta = `
+        DELETE FROM preparaciones
+        WHERE id = $1
+        RETURNING id, receta_id, numero_paso, descripcion;
+    `;
+    const resultado = await pool.query(consulta, [id]);
+    return resultado.rows[0];
+}
+
+const preparacionPerteneceUsuario = async (id, usuario_id) => {
+    const consulta = `
+        SELECT p.id
+        FROM preparaciones p
+        JOIN recetas r ON p.receta_id = r.id
+        WHERE p.id = $1 AND r.usuario_id = $2;
+    `;
+    const resultado = await pool.query(consulta, [id, usuario_id]);
+    return Boolean(resultado.rows[0]);
+}
+
+const recetaPerteneceUsuario = async (receta_id, usuario_id) => {
+    const consulta = `
+        SELECT id
+        FROM recetas
+        WHERE id = $1 AND usuario_id = $2;
+    `;
+    const resultado = await pool.query(consulta, [receta_id, usuario_id]);
+    return Boolean(resultado.rows[0]);
+}
+
 module.exports = {
     crearPreparacion,
     verPreparaciones,
     obtenerPreparacionPorReceta,
-    obtenerPreparacionPorNumeroPaso
+    obtenerPreparacionPorNumeroPaso,
+    actualizarPreparacion,
+    eliminarPreparacion,
+    preparacionPerteneceUsuario,
+    recetaPerteneceUsuario
 };

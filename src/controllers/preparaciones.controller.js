@@ -2,7 +2,10 @@ const preparacionesService = require("../services/preparaciones.service");
 
 const crearPreparacion = async (req, res) => {
   try {
-    const preparacion = await preparacionesService.crearPreparacion(req.body);
+    const preparacion = await preparacionesService.crearPreparacionParaUsuario(
+      req.usuario.id,
+      req.body
+    );
     res.status(201).json({
       mensaje: "Preparacion creada correctamente",
       preparacion,
@@ -60,9 +63,50 @@ const obtenerPreparacionPorNumeroPaso = async (req, res) => {
   }
 };
 
+const actualizarPreparacion = async (req, res) => {
+  try {
+    const preparacion = await preparacionesService.actualizarPreparacion(
+      req.params.id,
+      req.usuario.id,
+      req.body
+    );
+    res.json({
+      mensaje: "Preparacion actualizada correctamente",
+      preparacion,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al actualizar preparacion",
+      detalle: error.message,
+    });
+  }
+};
+
+const eliminarPreparacion = async (req, res) => {
+  try {
+    const preparacion = await preparacionesService.eliminarPreparacion(
+      req.params.id,
+      req.usuario.id
+    );
+    res.json({
+      mensaje: "Preparacion eliminada correctamente",
+      preparacion,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+      mensaje: "Error al eliminar preparacion",
+      detalle: error.message,
+    });
+  }
+};
+
 module.exports = {
   crearPreparacion,
   verPreparaciones,
   obtenerPreparacionPorReceta,
   obtenerPreparacionPorNumeroPaso,
+  actualizarPreparacion,
+  eliminarPreparacion,
 };
