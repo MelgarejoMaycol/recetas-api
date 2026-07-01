@@ -28,14 +28,14 @@ const crearRecetaIngredienteParaUsuario = async (usuario_id, datos) => {
   return crearRecetaIngrediente(datos);
 };
 
-const verIngredientesPorReceta = async (receta_id) => {
+const verIngredientesPorReceta = async (receta_id, paginacion) => {
   if (!receta_id) {
     const error = new Error("receta_id es obligatorio");
     error.statusCode = 400;
     throw error;
   }
 
-  return recetasIngredientesModel.verIngredientesPorReceta(receta_id);
+  return recetasIngredientesModel.verIngredientesPorReceta(receta_id, paginacion);
 };
 
 const actualizarRecetaIngrediente = async (id, usuario_id, { cantidad, unidad }) => {

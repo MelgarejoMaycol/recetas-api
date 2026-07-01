@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { normalizarPaginacion, crearRespuestaPaginada } = require("../utils/pagination");
 
 const crearPreparacion = async (receta_id, numero_paso, descripcion) => {
     const consulta = `
@@ -11,26 +12,39 @@ const crearPreparacion = async (receta_id, numero_paso, descripcion) => {
     return resultado.rows[0];
 }
 
-const verPreparaciones = async () => {
+const verPreparaciones = async ({ page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
     const consulta = `
         SELECT id, receta_id, numero_paso, descripcion
         FROM preparaciones
-        ORDER BY receta_id ASC, numero_paso ASC;
+        ORDER BY receta_id ASC, numero_paso ASC
+        LIMIT $1
+        OFFSET $2;
     `;
-    const resultado = await pool.query(consulta);
-    return resultado.rows;
+    const consultaTotal = `SELECT COUNT(*) AS total FROM preparaciones;`;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal)
+    ]);
+    return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
 }
 
-const obtenerPreparacionPorReceta = async (receta_id) => {
+const obtenerPreparacionPorReceta = async (receta_id, { page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
     const consulta = `
         SELECT id, receta_id, numero_paso, descripcion
         FROM preparaciones p
         WHERE receta_id = $1
-        ORDER BY numero_paso ASC;
+        ORDER BY numero_paso ASC
+        LIMIT $2
+        OFFSET $3;
     `;
-    const valores = [receta_id];
-    const resultado = await pool.query(consulta, valores);
-    return resultado.rows;
+    const consultaTotal = `SELECT COUNT(*) AS total FROM preparaciones WHERE receta_id = $1;`;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [receta_id, paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal, [receta_id])
+    ]);
+    return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
 }
 
 const obtenerPreparacionPorNumeroPaso = async (receta_id, numero_paso) => {

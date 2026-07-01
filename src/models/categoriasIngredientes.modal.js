@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { normalizarPaginacion, crearRespuestaPaginada } = require("../utils/pagination");
 
 const crearCategoriaIngrediente = async (nombre) => {
     const consulta = `
@@ -11,14 +12,21 @@ const crearCategoriaIngrediente = async (nombre) => {
     return resultado.rows[0];
 };
 
-const verCategoriasIngredientes = async () => {
+const verCategoriasIngredientes = async ({ page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
     const consulta = `
         SELECT id, nombre
         FROM categorias_ingredientes
-        ORDER BY id DESC;
+        ORDER BY id DESC
+        LIMIT $1
+        OFFSET $2;
     `;
-    const resultado = await pool.query(consulta);
-    return resultado.rows;
+    const consultaTotal = `SELECT COUNT(*) AS total FROM categorias_ingredientes;`;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal)
+    ]);
+    return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
 };
 
 const obtenerCategoriaIngredientePorId = async (id) => {

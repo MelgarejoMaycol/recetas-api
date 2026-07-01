@@ -22,7 +22,7 @@ const crearComentario = async (req, res) => {
 const verComentarios = async (req, res) => {
   try {
     const { receta_id } = req.params;
-    const comentarios = await comentariosService.verComentarios(receta_id);
+    const comentarios = await comentariosService.verComentarios(receta_id, req.query);
     res.json(comentarios);
   } catch (error) {
     console.error(error);
@@ -35,7 +35,7 @@ const verComentarios = async (req, res) => {
 
 const verMisComentarios = async (req, res) => {
   try {
-    const comentarios = await comentariosService.verMisComentarios(req.usuario.id);
+    const comentarios = await comentariosService.verMisComentarios(req.usuario.id, req.query);
     res.json(comentarios);
   } catch (error) {
     console.error(error);

@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { normalizarPaginacion, crearRespuestaPaginada } = require("../utils/pagination");
 
 const crearReceta = async (
     nombre,
@@ -52,9 +53,10 @@ const camposReceta = `
     JOIN categorias_recetas c ON r.categoria_id = c.id
 `;
 
-const verRecetas = async ({ q, categoria_id, pais, dificultad } = {}) => {
+const verRecetas = async ({ q, categoria_id, pais, dificultad, page, limit } = {}) => {
     const condiciones = [];
     const valores = [];
+    const paginacion = normalizarPaginacion({ page, limit });
 
     if (q) {
         valores.push(`%${q}%`);
@@ -77,13 +79,31 @@ const verRecetas = async ({ q, categoria_id, pais, dificultad } = {}) => {
     }
 
     const where = condiciones.length ? `WHERE ${condiciones.join(" AND ")}` : "";
+    const valoresConsulta = [...valores, paginacion.limit, paginacion.offset];
     const consulta = `
         ${camposReceta}
         ${where}
-        ORDER BY r.id DESC;
+        ORDER BY r.id DESC
+        LIMIT $${valores.length + 1}
+        OFFSET $${valores.length + 2};
     `;
-    const resultado = await pool.query(consulta, valores);
-    return resultado.rows;
+    const consultaTotal = `
+        SELECT COUNT(*) AS total
+        FROM recetas r
+        JOIN usuarios u ON r.usuario_id = u.id
+        JOIN categorias_recetas c ON r.categoria_id = c.id
+        ${where};
+    `;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, valoresConsulta),
+        pool.query(consultaTotal, valores)
+    ]);
+    return crearRespuestaPaginada(
+        resultado.rows,
+        total.rows[0].total,
+        paginacion.page,
+        paginacion.limit
+    );
 };
 
 const obtenerRecetaPorId = async (id) => {
@@ -147,7 +167,8 @@ const eliminarReceta = async (id, usuarioId) => {
     return resultado.rows[0];
 };
 
-const verMisRecetas = async (usuarioId) => {
+const verMisRecetas = async (usuarioId, { page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
     const consulta = `
         SELECT r.id, r.nombre, r.descripcion, r.pais, r.imagen_url,
                r.tiempo_preparacion, r.porciones, r.dificultad,
@@ -157,11 +178,25 @@ const verMisRecetas = async (usuarioId) => {
         JOIN usuarios u ON r.usuario_id = u.id
         JOIN categorias_recetas c ON r.categoria_id = c.id
         WHERE r.usuario_id = $1
-        ORDER BY r.id DESC;
+        ORDER BY r.id DESC
+        LIMIT $2
+        OFFSET $3;
     `;
-    const valores = [usuarioId];
-    const resultado = await pool.query(consulta, valores);
-    return resultado.rows;
+    const consultaTotal = `
+        SELECT COUNT(*) AS total
+        FROM recetas
+        WHERE usuario_id = $1;
+    `;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [usuarioId, paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal, [usuarioId])
+    ]);
+    return crearRespuestaPaginada(
+        resultado.rows,
+        total.rows[0].total,
+        paginacion.page,
+        paginacion.limit
+    );
 };
 
 module.exports = {

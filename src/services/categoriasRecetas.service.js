@@ -10,8 +10,8 @@ const crearCategoriaReceta = async ({ nombre }) => {
   return categoriasRecetasModel.crearCategoriaRecetas(nombre);
 };
 
-const verCategoriasRecetas = async () => {
-  return categoriasRecetasModel.verCategoriasRecetas();
+const verCategoriasRecetas = async (paginacion) => {
+  return categoriasRecetasModel.verCategoriasRecetas(paginacion);
 };
 
 const obtenerCategoriaRecetaPorId = async (id) => {

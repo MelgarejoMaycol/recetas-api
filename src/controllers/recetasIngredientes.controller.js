@@ -22,7 +22,7 @@ const crearRecetaIngrediente = async (req, res) => {
 const verIngredientesPorReceta = async (req, res) => {
   try {
     const { receta_id } = req.params;
-    const ingredientes = await recetasIngredientesService.verIngredientesPorReceta(receta_id);
+    const ingredientes = await recetasIngredientesService.verIngredientesPorReceta(receta_id, req.query);
     res.json(ingredientes);
   } catch (error) {
     console.error(error);

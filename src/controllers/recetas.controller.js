@@ -86,7 +86,7 @@ const eliminarReceta = async (req, res) => {
 
 const verMisRecetas = async (req, res) => {
     try {
-        const misRecetas = await recetasServices.verMisRecetas(req.usuario.id);
+        const misRecetas = await recetasServices.verMisRecetas(req.usuario.id, req.query);
         res.json(misRecetas);
     } catch (error) {
         console.error(error);

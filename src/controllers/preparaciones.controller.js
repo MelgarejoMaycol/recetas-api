@@ -18,7 +18,7 @@ const crearPreparacion = async (req, res) => {
 
 const verPreparaciones = async (req, res) => {
   try {
-    const preparaciones = await preparacionesService.verPreparaciones();
+    const preparaciones = await preparacionesService.verPreparaciones(req.query);
     res.json(preparaciones);
   } catch (error) {
     console.error(error);
@@ -32,7 +32,7 @@ const verPreparaciones = async (req, res) => {
 const obtenerPreparacionPorReceta = async (req, res) => {
   try {
     const { receta_id } = req.params;
-    const preparaciones = await preparacionesService.obtenerPreparacionPorReceta(receta_id);
+    const preparaciones = await preparacionesService.obtenerPreparacionPorReceta(receta_id, req.query);
     res.json(preparaciones);
   } catch (error) {
     console.error(error);

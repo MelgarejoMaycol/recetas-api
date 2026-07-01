@@ -18,7 +18,7 @@ const crearIngrediente = async (req, res) => {
 
 const verIngredientes = async (req, res) => {
   try {
-    const ingredientes = await ingredientesService.verIngredientes();
+    const ingredientes = await ingredientesService.verIngredientes(req.query);
     res.json(ingredientes);
   } catch (error) {
     console.error(error);

@@ -10,24 +10,24 @@ const crearComentario = async ({ receta_id, usuario_id, comentario, calificacion
   return comentariosModel.comentarios(receta_id, usuario_id, comentario, calificacion || null);
 };
 
-const verComentarios = async (receta_id) => {
+const verComentarios = async (receta_id, paginacion) => {
   if (!receta_id) {
     const error = new Error("receta_id es obligatorio");
     error.statusCode = 400;
     throw error;
   }
 
-  return comentariosModel.verComentarios(receta_id);
+  return comentariosModel.verComentarios(receta_id, paginacion);
 };
 
-const verMisComentarios = async (usuario_id) => {
+const verMisComentarios = async (usuario_id, paginacion) => {
   if (!usuario_id) {
     const error = new Error("usuario_id es obligatorio");
     error.statusCode = 400;
     throw error;
   }
 
-  return comentariosModel.verMisComentarios(usuario_id);
+  return comentariosModel.verMisComentarios(usuario_id, paginacion);
 };
 
 const verMejoresRecetas = async () => {

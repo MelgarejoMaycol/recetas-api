@@ -21,7 +21,7 @@ const crearFavorito = async (req, res) => {
 
 const verFavoritosPorUsuario = async (req, res) => {
   try {
-    const favoritos = await favoritosService.verFavoritosPorUsuario(req.usuario.id);
+    const favoritos = await favoritosService.verFavoritosPorUsuario(req.usuario.id, req.query);
     res.json(favoritos);
   } catch (error) {
     console.error(error);

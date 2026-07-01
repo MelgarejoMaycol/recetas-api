@@ -18,7 +18,7 @@ const crearCategoriaIngrediente = async (req, res) => {
 
 const verCategoriasIngredientes = async (req, res) => {
   try {
-    const categorias = await categoriasIngredientesService.verCategoriasIngredientes();
+    const categorias = await categoriasIngredientesService.verCategoriasIngredientes(req.query);
     res.json(categorias);
   } catch (error) {
     console.error(error);

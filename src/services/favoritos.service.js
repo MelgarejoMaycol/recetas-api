@@ -10,14 +10,14 @@ const crearFavorito = async ({ usuario_id, receta_id }) => {
   return favoritosModel.crearFavorito(usuario_id, receta_id);
 };
 
-const verFavoritosPorUsuario = async (usuario_id) => {
+const verFavoritosPorUsuario = async (usuario_id, paginacion) => {
   if (!usuario_id) {
     const error = new Error("usuario_id es obligatorio");
     error.statusCode = 400;
     throw error;
   }
 
-  return favoritosModel.verFavoritosPorUsuario(usuario_id);
+  return favoritosModel.verFavoritosPorUsuario(usuario_id, paginacion);
 };
 
 const eliminarFavorito = async (usuario_id, receta_id) => {

@@ -115,14 +115,14 @@ const eliminarReceta = async (id, usuario_id) => {
     return receta;
 };
 
-const verMisRecetas = async (usuario_id) => {
+const verMisRecetas = async (usuario_id, paginacion) => {
     if (!usuario_id) {
         const error = new Error("usuario_id es obligatorio");
         error.statusCode = 400;
         throw error;
     }
 
-    return recetasModel.verMisRecetas(usuario_id);
+    return recetasModel.verMisRecetas(usuario_id, paginacion);
 };
 
 module.exports = {

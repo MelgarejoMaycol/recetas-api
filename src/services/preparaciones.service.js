@@ -10,18 +10,18 @@ const crearPreparacion = async ({ receta_id, numero_paso, descripcion }) => {
   return preparacionesModel.crearPreparacion(receta_id, numero_paso, descripcion);
 };
 
-const verPreparaciones = async () => {
-  return preparacionesModel.verPreparaciones();
+const verPreparaciones = async (paginacion) => {
+  return preparacionesModel.verPreparaciones(paginacion);
 };
 
-const obtenerPreparacionPorReceta = async (receta_id) => {
+const obtenerPreparacionPorReceta = async (receta_id, paginacion) => {
   if (!receta_id) {
     const error = new Error("receta_id es obligatorio");
     error.statusCode = 400;
     throw error;
   }
 
-  return preparacionesModel.obtenerPreparacionPorReceta(receta_id);
+  return preparacionesModel.obtenerPreparacionPorReceta(receta_id, paginacion);
 };
 
 const obtenerPreparacionPorNumeroPaso = async (receta_id, numero_paso) => {

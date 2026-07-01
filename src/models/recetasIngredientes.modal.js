@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { normalizarPaginacion, crearRespuestaPaginada } = require("../utils/pagination");
 
 const crearRecetaIngrediente = async (receta_id, ingrediente_id, cantidad, unidad) => {
     const consulta = `
@@ -11,7 +12,8 @@ const crearRecetaIngrediente = async (receta_id, ingrediente_id, cantidad, unida
     return resultado.rows[0];
 }
 
-const verIngredientesPorReceta = async (receta_id) => {
+const verIngredientesPorReceta = async (receta_id, { page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
     const consulta = `
         SELECT ri.id, ri.cantidad, ri.unidad,
                i.id AS ingrediente_id, i.nombre AS nombre_ingrediente,
@@ -26,11 +28,16 @@ const verIngredientesPorReceta = async (receta_id) => {
         JOIN usuarios u ON r.usuario_id = u.id
         JOIN categorias_recetas cat ON r.categoria_id = cat.id
         WHERE ri.receta_id = $1
-        ORDER BY ri.id DESC;
+        ORDER BY ri.id DESC
+        LIMIT $2
+        OFFSET $3;
     `;
-    const valores = [receta_id];
-    const resultado = await pool.query(consulta, valores);
-    return resultado.rows;
+    const consultaTotal = `SELECT COUNT(*) AS total FROM receta_ingredientes WHERE receta_id = $1;`;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [receta_id, paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal, [receta_id])
+    ]);
+    return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
 }
 
 const actualizarRecetaIngrediente = async (id, cantidad, unidad) => {
