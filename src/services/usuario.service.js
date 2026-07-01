@@ -22,8 +22,8 @@ const crearUsuario = async ({ nombre, email, password }) => {
   return usuarioModel.crearUsuario(nombre, email, passwordEncriptada);
 };
 
-const obtenerUsuarios = async () => {
-  return usuarioModel.obtenerUsuarios();
+const obtenerUsuarios = async (paginacion) => {
+  return usuarioModel.obtenerUsuarios(paginacion);
 };
 
 const loginUsuario = async ({ email, password }) => {

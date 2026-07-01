@@ -19,7 +19,7 @@ const crearUsuario = async (req, res) => {
 
 const obtenerUsuarios = async (req, res) => {
   try {
-    const usuarios = await usuarioService.obtenerUsuarios();
+    const usuarios = await usuarioService.obtenerUsuarios(req.query);
 
     res.json(usuarios);
   } catch (error) {

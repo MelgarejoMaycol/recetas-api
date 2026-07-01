@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { normalizarPaginacion, crearRespuestaPaginada } = require("../utils/pagination");
 
 const crearUsuario = async (nombre, email, password) => {
   const consulta = `
@@ -14,16 +15,23 @@ const crearUsuario = async (nombre, email, password) => {
   return resultado.rows[0];
 };
 
-const obtenerUsuarios = async () => {
+const obtenerUsuarios = async ({ page, limit } = {}) => {
+  const paginacion = normalizarPaginacion({ page, limit });
   const consulta = `
     SELECT id, nombre, email, fecha_creacion
     FROM usuarios
-    ORDER BY id DESC;
+    ORDER BY id DESC
+    LIMIT $1
+    OFFSET $2;
   `;
+  const consultaTotal = `SELECT COUNT(*) AS total FROM usuarios;`;
 
-  const resultado = await pool.query(consulta);
+  const [resultado, total] = await Promise.all([
+    pool.query(consulta, [paginacion.limit, paginacion.offset]),
+    pool.query(consultaTotal),
+  ]);
 
-  return resultado.rows;
+  return crearRespuestaPaginada(resultado.rows, total.rows[0].total, paginacion.page, paginacion.limit);
 };
 
 const actualizarDatos = async (id, nombre, email) => {
