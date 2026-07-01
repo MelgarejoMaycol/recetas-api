@@ -34,17 +34,17 @@ jobs:
 
       - name: Ejecutar smoke test con base de datos
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_SSL: ${{ secrets.DB_SSL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          DB_HOST: ${{ secrets['DB_HOST'] }}
+          DB_PORT: ${{ secrets['DB_PORT'] }}
+          DB_NAME: ${{ secrets['DB_NAME'] }}
+          DB_USER: ${{ secrets['DB_USER'] }}
+          DB_PASSWORD: ${{ secrets['DB_PASSWORD'] }}
+          DB_SSL: ${{ secrets['DB_SSL'] }}
+          JWT_SECRET: ${{ secrets['JWT_SECRET'] }}
+          JWT_EXPIRES_IN: ${{ secrets['JWT_EXPIRES_IN'] }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets['CLOUDINARY_CLOUD_NAME'] }}
+          CLOUDINARY_API_KEY: ${{ secrets['CLOUDINARY_API_KEY'] }}
+          CLOUDINARY_API_SECRET: ${{ secrets['CLOUDINARY_API_SECRET'] }}
           CORS_ORIGIN: "*"
         run: |
           if [ -z "$DB_HOST" ] || [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$JWT_SECRET" ]; then
