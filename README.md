@@ -123,6 +123,32 @@ npm run check
 Valida sintaxis basica de archivos principales.
 
 ```bash
+npm run seed:real
+```
+
+Carga datos reales desde TheMealDB: usuarios semilla, categorias, ingredientes, recetas con `imagen_url`, pasos de preparacion, comentarios y favoritos.
+
+Por defecto intenta importar hasta 200 recetas usando busqueda por letra y categorias. Para controlar el volumen:
+
+```powershell
+$env:SEED_RECIPE_LIMIT='300'; npm run seed:real
+```
+
+Tambien se puede cambiar la concurrencia de peticiones externas y los reintentos si la API responde lento:
+
+```powershell
+$env:SEED_REQUEST_CONCURRENCY='4'; npm run seed:real
+```
+
+```powershell
+$env:SEED_REQUEST_RETRIES='6'; npm run seed:real
+```
+
+Los usuarios creados usan correos terminados en `@seed.recetas.local` y la password temporal `Recetas123`, modificable con `SEED_USER_PASSWORD`.
+
+El importador descarta recetas repetidas por nombre normalizado antes de insertar y reutiliza la receta existente si ya esta en la base.
+
+```bash
 npm run test:smoke
 ```
 

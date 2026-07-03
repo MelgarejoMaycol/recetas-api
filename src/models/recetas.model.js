@@ -115,6 +115,26 @@ const obtenerRecetaPorId = async (id) => {
     return resultado.rows[0];
 };
 
+const obtenerRecetaPorNombre = async (nombre, idExcluir = null) => {
+    const valores = [nombre];
+    const condicionExcluir = idExcluir ? "AND id <> $2" : "";
+
+    if (idExcluir) {
+        valores.push(idExcluir);
+    }
+
+    const consulta = `
+        SELECT id, nombre
+        FROM recetas
+        WHERE LOWER(REGEXP_REPLACE(TRIM(nombre), '\\s+', ' ', 'g')) =
+              LOWER(REGEXP_REPLACE(TRIM($1), '\\s+', ' ', 'g'))
+        ${condicionExcluir}
+        LIMIT 1;
+    `;
+    const resultado = await pool.query(consulta, valores);
+    return resultado.rows[0];
+};
+
 const actualizarReceta = async (
     id,
     usuarioId,
@@ -203,6 +223,7 @@ module.exports = {
     crearReceta,
     verRecetas,
     obtenerRecetaPorId,
+    obtenerRecetaPorNombre,
     actualizarReceta,
     eliminarReceta,
     verMisRecetas,

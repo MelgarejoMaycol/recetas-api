@@ -21,6 +21,13 @@ const crearReceta = async (datos, archivo) => {
         throw error;
     }
 
+    const recetaExistente = await recetasModel.obtenerRecetaPorNombre(nombre);
+    if (recetaExistente) {
+        const error = new Error("Ya existe una receta con ese nombre");
+        error.statusCode = 409;
+        throw error;
+    }
+
     return recetasModel.crearReceta(
         nombre,
         descripcion || null,
@@ -75,6 +82,13 @@ const actualizarReceta = async (id, usuario_id, datos, archivo) => {
     } = datos;
 
     const imagenReceta = archivo?.path || imagen_url || null;
+    const recetaExistente = await recetasModel.obtenerRecetaPorNombre(nombre, id);
+    if (recetaExistente) {
+        const error = new Error("Ya existe una receta con ese nombre");
+        error.statusCode = 409;
+        throw error;
+    }
+
     const receta = await recetasModel.actualizarReceta(
         id,
         usuario_id,
