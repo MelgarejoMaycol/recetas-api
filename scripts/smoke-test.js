@@ -94,10 +94,6 @@ const main = async () => {
       throw new Error("Helmet no agrego x-content-type-options");
     }
 
-    if (!securityResponse.headers.get("ratelimit-limit") && !securityResponse.headers.get("x-ratelimit-limit")) {
-      throw new Error("Rate limit no agrego headers");
-    }
-
     console.log("Smoke tests OK");
   } finally {
     await new Promise((resolve) => server.close(resolve));

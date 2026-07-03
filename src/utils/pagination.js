@@ -1,6 +1,6 @@
 const normalizarPaginacion = ({ page = 1, limit = 10 } = {}) => {
   const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
-  const limitNumber = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100);
+  const limitNumber = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 200);
   const offset = (pageNumber - 1) * limitNumber;
 
   return {

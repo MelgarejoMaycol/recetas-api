@@ -19,12 +19,26 @@ const comentariosRoutes = require("./routes/comentarios.routes");
 const favoritosRoutes = require("./routes/favoritos.routes");
 const recetasIngredientesRoutes = require("./routes/recetasIngredientes.routes");
 
+const isLocalOrigin = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || "");
+const corsOrigins = (process.env.CORS_ORIGIN || "*")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || corsOrigins.includes("*") || isLocalOrigin(origin) || corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Origen no permitido por CORS"));
+  },
+};
+
 app.use(helmet({
   contentSecurityPolicy: false,
 }));
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "*",
-}));
+app.use(cors(corsOptions));
 app.use(apiLimiter);
 app.use(express.json());
 

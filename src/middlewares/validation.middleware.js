@@ -73,7 +73,7 @@ const validarQuery = (rules) => validar(rules, "query");
 
 const paginacionRules = [
   validators.integer("page", "page", { min: 1 }),
-  validators.integer("limit", "limit", { min: 1, max: 100 }),
+  validators.integer("limit", "limit", { min: 1, max: 200 }),
 ];
 
 const idParamRules = (field = "id") => [

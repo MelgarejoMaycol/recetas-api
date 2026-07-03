@@ -122,7 +122,7 @@ const swaggerSpec = swaggerJsdoc({
         Limit: {
           in: "query",
           name: "limit",
-          schema: { type: "integer", minimum: 1, maximum: 100 },
+          schema: { type: "integer", minimum: 1, maximum: 200 },
           required: false,
         },
       },

@@ -86,6 +86,8 @@ http://localhost:3000
 ```env
 PORT=3000
 CORS_ORIGIN=*
+RATE_LIMIT_MAX=200
+RATE_LIMIT_WINDOW_MS=900000
 
 DB_HOST=HOST-BASEDEDATOS.COM
 DB_PORT=5432
@@ -549,7 +551,8 @@ La API incluye:
 - Rutas privadas protegidas.
 - Validaciones formales de body, params y query.
 - Helmet para headers de seguridad.
-- Rate limit basico de 100 peticiones por ventana.
+- Rate limit basico de 200 peticiones por ventana configurable con `RATE_LIMIT_MAX`.
+- Las peticiones desde `localhost` o `127.0.0.1` no tienen restriccion de CORS ni rate limit.
 - `.env` ignorado por Git.
 - `.env.example` incluido como plantilla segura.
 
