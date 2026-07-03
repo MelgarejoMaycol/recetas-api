@@ -58,6 +58,8 @@ const recetasQueryRules = [
 ];
 
 router.get("/", validarQuery(recetasQueryRules), recetasController.verRecetas);
+router.get("/mas-valoradas", validarQuery(paginacionRules), recetasController.verRecetasMasValoradas);
+router.get("/recientes", validarQuery(paginacionRules), recetasController.verRecetasRecientes);
 router.get(
   "/mis-recetas/:usuario_id",
   autenticar,

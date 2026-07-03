@@ -135,6 +135,68 @@ const obtenerRecetaPorNombre = async (nombre, idExcluir = null) => {
     return resultado.rows[0];
 };
 
+const verRecetasMasValoradas = async ({ page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
+    const consulta = `
+        SELECT r.id, r.nombre, r.descripcion, r.pais, r.imagen_url,
+               r.tiempo_preparacion, r.porciones, r.dificultad,
+               r.usuario_id, r.categoria_id, r.fecha_creacion,
+               u.nombre AS nombre_usuario, c.nombre AS nombre_categoria,
+               ROUND(AVG(co.calificacion)::numeric, 2) AS calificacion_promedio,
+               COUNT(co.calificacion)::int AS total_calificaciones
+        FROM recetas r
+        JOIN usuarios u ON r.usuario_id = u.id
+        JOIN categorias_recetas c ON r.categoria_id = c.id
+        JOIN comentarios co ON r.id = co.receta_id
+        WHERE co.calificacion IS NOT NULL
+        GROUP BY r.id, u.nombre, c.nombre
+        ORDER BY calificacion_promedio DESC, total_calificaciones DESC, r.id DESC
+        LIMIT $1
+        OFFSET $2;
+    `;
+    const consultaTotal = `
+        SELECT COUNT(*) AS total
+        FROM (
+            SELECT r.id
+            FROM recetas r
+            JOIN comentarios co ON r.id = co.receta_id
+            WHERE co.calificacion IS NOT NULL
+            GROUP BY r.id
+        ) recetas_valoradas;
+    `;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal)
+    ]);
+    return crearRespuestaPaginada(
+        resultado.rows,
+        total.rows[0].total,
+        paginacion.page,
+        paginacion.limit
+    );
+};
+
+const verRecetasRecientes = async ({ page, limit } = {}) => {
+    const paginacion = normalizarPaginacion({ page, limit });
+    const consulta = `
+        ${camposReceta}
+        ORDER BY r.fecha_creacion DESC, r.id DESC
+        LIMIT $1
+        OFFSET $2;
+    `;
+    const consultaTotal = `SELECT COUNT(*) AS total FROM recetas;`;
+    const [resultado, total] = await Promise.all([
+        pool.query(consulta, [paginacion.limit, paginacion.offset]),
+        pool.query(consultaTotal)
+    ]);
+    return crearRespuestaPaginada(
+        resultado.rows,
+        total.rows[0].total,
+        paginacion.page,
+        paginacion.limit
+    );
+};
+
 const actualizarReceta = async (
     id,
     usuarioId,
@@ -224,6 +286,8 @@ module.exports = {
     verRecetas,
     obtenerRecetaPorId,
     obtenerRecetaPorNombre,
+    verRecetasMasValoradas,
+    verRecetasRecientes,
     actualizarReceta,
     eliminarReceta,
     verMisRecetas,

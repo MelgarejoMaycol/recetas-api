@@ -67,6 +67,14 @@ const obtenerRecetaPorId = async (id) => {
     return receta;
 };
 
+const verRecetasMasValoradas = async (paginacion) => {
+    return recetasModel.verRecetasMasValoradas(paginacion);
+};
+
+const verRecetasRecientes = async (paginacion) => {
+    return recetasModel.verRecetasRecientes(paginacion);
+};
+
 const actualizarReceta = async (id, usuario_id, datos, archivo) => {
     const recetaActual = await obtenerRecetaPorId(id);
 
@@ -144,6 +152,8 @@ module.exports = {
     verRecetas,
     buscarRecetas,
     obtenerRecetaPorId,
+    verRecetasMasValoradas,
+    verRecetasRecientes,
     actualizarReceta,
     eliminarReceta,
     verMisRecetas

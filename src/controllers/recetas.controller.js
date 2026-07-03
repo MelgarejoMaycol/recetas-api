@@ -47,6 +47,30 @@ const obtenerRecetaPorId = async (req, res) => {
     }
 };
 
+const verRecetasMasValoradas = async (req, res) => {
+    try {
+        const recetas = await recetasServices.verRecetasMasValoradas(req.query);
+        res.json(recetas);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            mensaje: "Error al obtener recetas mas valoradas",
+        });
+    }
+};
+
+const verRecetasRecientes = async (req, res) => {
+    try {
+        const recetas = await recetasServices.verRecetasRecientes(req.query);
+        res.json(recetas);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            mensaje: "Error al obtener recetas recientes",
+        });
+    }
+};
+
 const actualizarReceta = async (req, res) => {
     try {
         const receta = await recetasServices.actualizarReceta(
@@ -101,6 +125,8 @@ module.exports = {
     crearReceta,
     verRecetas,
     obtenerRecetaPorId,
+    verRecetasMasValoradas,
+    verRecetasRecientes,
     actualizarReceta,
     eliminarReceta,
     verMisRecetas

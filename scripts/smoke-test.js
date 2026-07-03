@@ -53,6 +53,20 @@ const main = async () => {
     const invalid = await request(baseUrl, "/api/recetas?page=0");
     assertStatus(invalid, 400, "Validacion de query");
 
+    const masValoradas = await request(baseUrl, "/api/recetas/mas-valoradas?page=1&limit=3");
+    assertStatus(masValoradas, 200, "GET /api/recetas/mas-valoradas");
+
+    if (!masValoradas.body || !masValoradas.body.pagination || !Array.isArray(masValoradas.body.data)) {
+      throw new Error("GET /api/recetas/mas-valoradas no devolvio respuesta paginada");
+    }
+
+    const recientes = await request(baseUrl, "/api/recetas/recientes?page=1&limit=3");
+    assertStatus(recientes, 200, "GET /api/recetas/recientes");
+
+    if (!recientes.body || !recientes.body.pagination || !Array.isArray(recientes.body.data)) {
+      throw new Error("GET /api/recetas/recientes no devolvio respuesta paginada");
+    }
+
     const protectedRoute = await request(baseUrl, "/api/preparaciones", {
       method: "POST",
       body: JSON.stringify({

@@ -188,6 +188,24 @@ const swaggerSpec = swaggerJsdoc({
           responses: { 201: { description: "Receta creada" }, 401: { description: "Token requerido" } },
         },
       },
+      "/api/recetas/mas-valoradas": {
+        get: {
+          tags: ["Recetas"],
+          summary: "Listar recetas mejor calificadas",
+          description: "Devuelve recetas con calificacion_promedio y total_calificaciones, ordenadas de mayor a menor calificacion.",
+          parameters: [{ $ref: "#/components/parameters/Page" }, { $ref: "#/components/parameters/Limit" }],
+          responses: { 200: { description: "Recetas mejor calificadas" } },
+        },
+      },
+      "/api/recetas/recientes": {
+        get: {
+          tags: ["Recetas"],
+          summary: "Listar recetas mas recientes",
+          description: "Devuelve recetas ordenadas por fecha_creacion descendente.",
+          parameters: [{ $ref: "#/components/parameters/Page" }, { $ref: "#/components/parameters/Limit" }],
+          responses: { 200: { description: "Recetas mas recientes" } },
+        },
+      },
       "/api/recetas/{id}": {
         get: {
           tags: ["Recetas"],

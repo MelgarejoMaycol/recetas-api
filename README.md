@@ -325,6 +325,8 @@ La contraseña nunca se devuelve en las respuestas de la API.
 | Metodo | Endpoint | Privado | Descripcion |
 |---|---|---:|---|
 | GET | `/api/recetas?page=1&limit=10` | No | Listar recetas |
+| GET | `/api/recetas/mas-valoradas?page=1&limit=10` | No | Listar recetas mejor calificadas |
+| GET | `/api/recetas/recientes?page=1&limit=10` | No | Listar recetas mas recientes |
 | GET | `/api/recetas/:id` | No | Obtener receta por ID |
 | GET | `/api/recetas/mis-recetas/:usuario_id?page=1&limit=10` | Si | Ver recetas del usuario logueado |
 | POST | `/api/recetas` | Si | Crear receta |
@@ -336,6 +338,22 @@ Filtros disponibles:
 ```text
 /api/recetas?q=arroz&categoria_id=1&pais=Colombia&dificultad=Facil&page=1&limit=10
 ```
+
+Recetas mejor calificadas:
+
+```text
+/api/recetas/mas-valoradas?page=1&limit=10
+```
+
+Devuelve recetas con `calificacion_promedio` y `total_calificaciones`, ordenadas de mayor a menor calificacion.
+
+Recetas mas recientes:
+
+```text
+/api/recetas/recientes?page=1&limit=10
+```
+
+Devuelve recetas ordenadas por `fecha_creacion` descendente.
 
 Crear receta con JSON:
 
