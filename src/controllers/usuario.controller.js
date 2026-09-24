@@ -10,10 +10,18 @@ const crearUsuario = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(error.statusCode || 500).json({
-      mensaje: "Error al crear usuario",
-      detalle: error.message,
-    });
+    const statusCode = error.statusCode || 500;
+    const response = {
+      mensaje: statusCode < 500
+        ? error.message
+        : "No fue posible crear la cuenta. Intenta nuevamente en unos minutos.",
+    };
+
+    if (process.env.NODE_ENV !== "production") {
+      response.detalle = error.message;
+    }
+
+    res.status(statusCode).json(response);
   }
 };
 
