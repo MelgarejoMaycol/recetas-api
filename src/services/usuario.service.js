@@ -9,7 +9,10 @@ const crearUsuario = async ({ nombre, email, password }) => {
     throw error;
   }
 
-  const usuarioExistente = await usuarioModel.buscarUsuarioPorEmail(email);
+  const nombreNormalizado = nombre.trim();
+  const emailNormalizado = email.trim().toLowerCase();
+
+  const usuarioExistente = await usuarioModel.buscarUsuarioPorEmail(emailNormalizado);
 
   if (usuarioExistente) {
     const error = new Error("El email ya esta registrado");
@@ -19,7 +22,16 @@ const crearUsuario = async ({ nombre, email, password }) => {
 
   const passwordEncriptada = await bcrypt.hash(password, 10);
 
-  return usuarioModel.crearUsuario(nombre, email, passwordEncriptada);
+  try {
+    return await usuarioModel.crearUsuario(nombreNormalizado, emailNormalizado, passwordEncriptada);
+  } catch (error) {
+    if (error.code === "23505") {
+      const conflict = new Error("El email ya esta registrado");
+      conflict.statusCode = 409;
+      throw conflict;
+    }
+    throw error;
+  }
 };
 
 const obtenerUsuarios = async (paginacion) => {
@@ -40,8 +52,8 @@ const obtenerMiPerfil = async (usuario_id) => {
 
 const actualizarMiPerfil = async (usuario_id, { nombre, email }) => {
   const usuarioActual = await obtenerMiPerfil(usuario_id);
-  const nuevoNombre = nombre || usuarioActual.nombre;
-  const nuevoEmail = email || usuarioActual.email;
+  const nuevoNombre = nombre ? nombre.trim() : usuarioActual.nombre;
+  const nuevoEmail = email ? email.trim().toLowerCase() : usuarioActual.email;
 
   if (email && email !== usuarioActual.email) {
     const usuarioExistente = await usuarioModel.buscarUsuarioPorEmail(email);
@@ -63,7 +75,8 @@ const loginUsuario = async ({ email, password }) => {
     throw error;
   }
 
-  const usuario = await usuarioModel.buscarUsuarioPorEmail(email);
+  const emailNormalizado = email.trim().toLowerCase();
+  const usuario = await usuarioModel.buscarUsuarioPorEmail(emailNormalizado);
 
   if (!usuario) {
     const error = new Error("Credenciales incorrectas");
