@@ -47,6 +47,14 @@ app.get("/api-docs.json", (req, res) => {
   res.json(swaggerSpec);
 });
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "recetas-api",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/recetas", recetasRoutes);
 app.use("/api/categorias-recetas", categoriasRecetasRoutes);
