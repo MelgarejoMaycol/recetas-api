@@ -1,5 +1,11 @@
 # Recetas API
 
+[![Node CI](https://github.com/MelgarejoMaycol/recetas-api/actions/workflows/node-ci.yml/badge.svg)](https://github.com/MelgarejoMaycol/recetas-api/actions/workflows/node-ci.yml)
+
+**Calidad:** lint, verificación de sintaxis y auditoría de dependencias altas en GitHub Actions. El smoke de rutas con PostgreSQL requiere las variables de entorno de prueba; si no se configuran, el workflow lo omite explícitamente.
+
+
+
 API REST para gestionar recetas, usuarios, categorias, ingredientes, preparaciones, comentarios y favoritos.
 
 Proyecto creado por **Maycol Melgarejo**  
@@ -48,7 +54,7 @@ cd recetas-api
 Instalar dependencias:
 
 ```bash
-npm install
+npm ci
 ```
 
 Crear el archivo `.env` usando como base `.env.example`:
@@ -116,7 +122,7 @@ Inicia el servidor con `node src/server.js`.
 npm run dev
 ```
 
-Inicia el servidor con `nodemon`.
+Inicia el servidor con `node --watch` (Node.js 22 o superior).
 
 ```bash
 npm run check
