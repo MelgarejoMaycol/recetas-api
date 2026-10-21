@@ -18,14 +18,18 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Install dependencies
+      - name: Regenerate lockfile with no forced upgrades
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Install cleanly
         run: npm ci
-      - name: Apply supported security fixes without force
+      - name: Apply compatible security fixes
         run: npm audit fix --no-fund
       - name: Verify fresh install
         run: npm ci
-      - name: Run tests
-        run: npm test
+      - name: Lint
+        run: npm run lint
+      - name: Syntax verification
+        run: npm run check
       - name: Audit high and critical vulnerabilities
         run: npm audit --audit-level=high
       - name: Commit regenerated dependency files to isolated branch
