@@ -2,7 +2,9 @@
 
 [![Node CI](https://github.com/MelgarejoMaycol/recetas-api/actions/workflows/node-ci.yml/badge.svg)](https://github.com/MelgarejoMaycol/recetas-api/actions/workflows/node-ci.yml)
 
-**Calidad:** lint, verificación de sintaxis y auditoría de dependencias altas en GitHub Actions. El smoke de rutas con PostgreSQL requiere las variables de entorno de prueba; si no se configuran, el workflow lo omite explícitamente.
+**Calidad:** lint, verificación de sintaxis, auditoría de dependencias y smoke HTTP con PostgreSQL 16 aislado en GitHub Actions. El workflow falla si la base temporal o cualquiera de las comprobaciones falla. No requiere credenciales de producción.
+
+El fichero `scripts/ci-schema.sql` crea únicamente las cuatro tablas y filas mínimas que necesita el smoke de lectura. **No es una migración de producción ni una prueba exhaustiva de todos los endpoints.**
 
 
 

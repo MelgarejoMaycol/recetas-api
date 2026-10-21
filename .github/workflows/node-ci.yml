@@ -2,14 +2,44 @@ name: Node CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: public.ecr.aws/docker/library/postgres:16-alpine
+        env:
+          POSTGRES_DB: recetas_ci
+          POSTGRES_USER: recetas_ci
+          POSTGRES_PASSWORD: recetas_ci_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U recetas_ci -d recetas_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_NAME: recetas_ci
+      DB_USER: recetas_ci
+      DB_PASSWORD: recetas_ci_only
+      DB_SSL: "false"
+      JWT_SECRET: ci-test-jwt-secret-long-enough-for-tests-only
+      JWT_EXPIRES_IN: 1d
+      CORS_ORIGIN: "*"
+      CLOUDINARY_CLOUD_NAME: ci-placeholder
+      CLOUDINARY_API_KEY: "1234567890"
+      CLOUDINARY_API_SECRET: ci-placeholder-not-real
     steps:
       - name: Descargar codigo
         uses: actions/checkout@v4
@@ -20,7 +50,7 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Instalar dependencias
+      - name: Instalar dependencias reproducibles
         run: npm ci
 
       - name: Revisar estilo y errores basicos
@@ -32,24 +62,12 @@ jobs:
       - name: Revisar vulnerabilidades altas
         run: npm audit --audit-level=high
 
-      - name: Ejecutar smoke test con base de datos
+      - name: Preparar esquema y datos de prueba en PostgreSQL aislado
         env:
-          DB_HOST: ${{ secrets['DB_HOST'] }}
-          DB_PORT: ${{ secrets['DB_PORT'] }}
-          DB_NAME: ${{ secrets['DB_NAME'] }}
-          DB_USER: ${{ secrets['DB_USER'] }}
-          DB_PASSWORD: ${{ secrets['DB_PASSWORD'] }}
-          DB_SSL: ${{ secrets['DB_SSL'] }}
-          JWT_SECRET: ${{ secrets['JWT_SECRET'] }}
-          JWT_EXPIRES_IN: ${{ secrets['JWT_EXPIRES_IN'] }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets['CLOUDINARY_CLOUD_NAME'] }}
-          CLOUDINARY_API_KEY: ${{ secrets['CLOUDINARY_API_KEY'] }}
-          CLOUDINARY_API_SECRET: ${{ secrets['CLOUDINARY_API_SECRET'] }}
-          CORS_ORIGIN: "*"
+          PGPASSWORD: ${{ env.DB_PASSWORD }}
         run: |
-          if [ -z "$DB_HOST" ] || [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$JWT_SECRET" ]; then
-            echo "Smoke test omitido: configura DB_HOST, DB_NAME, DB_USER, DB_PASSWORD y JWT_SECRET para activarlo."
-            exit 0
-          fi
+          psql -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f scripts/ci-schema.sql
+          psql -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT COUNT(*) AS recetas_de_prueba FROM recetas;"
 
-          npm run test:smoke
+      - name: Ejecutar smoke test real con PostgreSQL
+        run: npm run test:smoke
