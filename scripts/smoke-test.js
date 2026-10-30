@@ -41,6 +41,11 @@ const main = async () => {
   try {
     assertStatus(await request(baseUrl, "/"), 200, "GET /");
     assertStatus(await request(baseUrl, "/api-docs.json"), 200, "GET /api-docs.json");
+    const health = await request(baseUrl, "/health");
+    assertStatus(health, 200, "GET /health");
+    if (!health.body || health.body.status !== "ok" || health.body.service !== "recetas-api") {
+      throw new Error("GET /health no devolvio el estado esperado");
+    }
     assertStatus(await request(baseUrl, "/ruta-inexistente"), 404, "GET 404");
 
     const recetas = await request(baseUrl, "/api/recetas?page=1&limit=1");
@@ -76,6 +81,14 @@ const main = async () => {
       }),
     });
     assertStatus(protectedRoute, 401, "Ruta protegida sin token");
+
+    const invalidToken = await request(baseUrl, "/api/usuarios/me", {
+      headers: { Authorization: "Bearer token-invalido" },
+    });
+    assertStatus(invalidToken, 401, "Ruta protegida con token invalido");
+
+    const invalidLimit = await request(baseUrl, "/api/recetas?page=1&limit=201");
+    assertStatus(invalidLimit, 400, "Validacion de limite de paginacion");
 
     const usuarios = await request(baseUrl, "/api/usuarios?page=1&limit=1");
     assertStatus(usuarios, 200, "GET /api/usuarios");

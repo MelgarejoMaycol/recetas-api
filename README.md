@@ -13,6 +13,24 @@ API REST para gestionar recetas, usuarios, categorias, ingredientes, preparacion
 Proyecto creado por **Maycol Melgarejo**  
 Contacto: **mfmelgarejo04@gmail.com**
 
+## Revisión rápida para evaluadores técnicos
+
+**Qué hace:** API REST para recetas, usuarios, ingredientes, comentarios y favoritos. Es un proyecto personal con código público, no un servicio comercial.
+
+- **Documentación interactiva:** [Swagger / OpenAPI](https://recetas-api-j4p8.onrender.com/api-docs).
+- **Especificación JSON:** [OpenAPI](https://recetas-api-j4p8.onrender.com/api-docs.json).
+- **Comprobación de servicio:** [GET /health](https://recetas-api-j4p8.onrender.com/health).
+- **Lectura pública de ejemplo:** `GET /api/recetas?page=1&limit=3` (responde con `data` y `pagination`).
+- **Autenticación y autorización:** [middleware JWT](src/middlewares/auth.middleware.js) y [rutas protegidas](src/routes/recetas.routes.js).
+- **Validación de entradas:** [reglas y middleware](src/middlewares/validation.middleware.js).
+- **Calidad:** [workflow CI](.github/workflows/node-ci.yml) y [smoke test HTTP](scripts/smoke-test.js).
+
+Para revisar código localmente: `npm ci`, preparar `.env` a partir de `.env.example`, disponer de PostgreSQL y ejecutar `npm run dev`. El servidor local escucha en `http://localhost:3000`, salvo que se cambie `PORT`.
+
+El smoke test verifica rutas de lectura, paginación, validaciones, accesos sin token, cabeceras básicas y uso de una base de datos PostgreSQL de prueba. **No sustituye** pruebas completas de CRUD autenticado, concurrencia, permisos de todos los recursos o pentesting. Las credenciales de la CI son exclusivamente de prueba.
+
+Si Render tarda en responder después de un período sin tráfico, la respuesta inicial puede demorarse; esto no confirma que todos los endpoints estén disponibles. Evita usar datos reales en pruebas del entorno público.
+
 ## URL de Produccion
 
 ```text
