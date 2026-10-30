@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 15
     services:
       postgres:
-        image: public.ecr.aws/docker/library/postgres:16-alpine
+        image: postgres:16-alpine
         env:
           POSTGRES_DB: recetas_ci
           POSTGRES_USER: recetas_ci
