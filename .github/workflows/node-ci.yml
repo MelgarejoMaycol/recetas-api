@@ -11,22 +11,10 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 incluye PostgreSQL 16: evita descargar imágenes externas
+    # sujetas a límites de peticiones de Docker/ECR.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: recetas_ci
-          POSTGRES_USER: recetas_ci
-          POSTGRES_PASSWORD: recetas_ci_only
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U recetas_ci -d recetas_ci"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     env:
       DB_HOST: 127.0.0.1
       DB_PORT: "5432"
@@ -41,6 +29,14 @@ jobs:
       CLOUDINARY_API_KEY: "1234567890"
       CLOUDINARY_API_SECRET: ci-placeholder-not-real
     steps:
+      - name: Arrancar PostgreSQL 16 del runner y crear base aislada
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE ROLE recetas_ci WITH LOGIN PASSWORD 'recetas_ci_only';"
+          sudo -u postgres createdb -O recetas_ci recetas_ci
+          pg_isready -h "$DB_HOST" -p "$DB_PORT"
+          PGPASSWORD="$DB_PASSWORD" psql -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;"
+
       - name: Descargar codigo
         uses: actions/checkout@v4
 
