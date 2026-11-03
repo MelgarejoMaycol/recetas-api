@@ -40,7 +40,12 @@ const main = async () => {
 
   try {
     assertStatus(await request(baseUrl, "/"), 200, "GET /");
-    assertStatus(await request(baseUrl, "/api-docs.json"), 200, "GET /api-docs.json");
+    assertStatus(await request(baseUrl, "/api-docs/"), 200, "GET /api-docs/");
+    const spec = await request(baseUrl, "/api-docs.json");
+    assertStatus(spec, 200, "GET /api-docs.json");
+    if (!Array.isArray(spec.body?.servers) || spec.body.servers[0]?.url !== "/") {
+      throw new Error("OpenAPI debe usar la dirección de origen actual por defecto");
+    }
     const health = await request(baseUrl, "/health");
     assertStatus(health, 200, "GET /health");
     if (!health.body || health.body.status !== "ok" || health.body.service !== "recetas-api") {
