@@ -10,8 +10,12 @@ const swaggerSpec = swaggerJsdoc({
     },
     servers: [
       {
+        url: "/",
+        description: "Servidor actual (misma dirección donde se abre la documentación)",
+      },
+      {
         url: "http://localhost:3000",
-        description: "Servidor local",
+        description: "Servidor local de desarrollo",
       },
     ],
     components: {
