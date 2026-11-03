@@ -17,9 +17,9 @@ Contacto: **mfmelgarejo04@gmail.com**
 
 **Qué hace:** API REST para recetas, usuarios, ingredientes, comentarios y favoritos. Es un proyecto personal con código público, no un servicio comercial.
 
-- **Documentación interactiva:** [Swagger / OpenAPI](https://recetas-api-j4p8.onrender.com/api-docs).
-- **Especificación JSON:** [OpenAPI](https://recetas-api-j4p8.onrender.com/api-docs.json).
-- **Comprobación de servicio:** [GET /health](https://recetas-api-j4p8.onrender.com/health).
+- **Documentación interactiva:** [Swagger / OpenAPI](https://recetas-api-k91i.onrender.com/api-docs).
+- **Especificación JSON:** [OpenAPI](https://recetas-api-k91i.onrender.com/api-docs.json).
+- **Comprobación de servicio:** [GET /health](https://recetas-api-k91i.onrender.com/health).
 - **Lectura pública de ejemplo:** `GET /api/recetas?page=1&limit=3` (responde con `data` y `pagination`).
 - **Autenticación y autorización:** [middleware JWT](src/middlewares/auth.middleware.js) y [rutas protegidas](src/routes/recetas.routes.js).
 - **Validación de entradas:** [reglas y middleware](src/middlewares/validation.middleware.js).
@@ -34,19 +34,19 @@ Si Render tarda en responder después de un período sin tráfico, la respuesta 
 ## URL de Produccion
 
 ```text
-https://recetas-api-j4p8.onrender.com
+https://recetas-api-k91i.onrender.com
 ```
 
 ## Documentacion Swagger
 
 ```text
-https://recetas-api-j4p8.onrender.com/api-docs
+https://recetas-api-k91i.onrender.com/api-docs
 ```
 
 JSON de OpenAPI:
 
 ```text
-https://recetas-api-j4p8.onrender.com/api-docs.json
+https://recetas-api-k91i.onrender.com/api-docs.json
 ```
 
 ## Tecnologias
@@ -254,7 +254,7 @@ http://localhost:3000
 Base produccion:
 
 ```text
-https://recetas-api-j4p8.onrender.com
+https://recetas-api-k91i.onrender.com
 ```
 
 ### Sistema
